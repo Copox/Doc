@@ -1,0 +1,42 @@
+// ==UserScript==
+// @name         ezline
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  2ez4me
+// @author       You
+// @match        https://store.line.me/stickershop/product/*
+// @grant    GM_setClipboard
+// ==/UserScript==
+
+(function() {
+    'use strict';
+//
+
+try{
+    var p = [];
+    var a = $('span[class$=Image]');
+    if(a&&a.length){
+        var l = a.length;
+        for(var i = 0;i<l;i++){
+            var v = $(a[i]).attr('style');
+            console.log(v);
+            var r = (v.match(/\/[0-9]+\//))[0].replace(/\//g,'');
+            if(r){
+                p.push('https://stickershop.line-scdn.net/stickershop/v1/sticker/' + r + '/IOS/sticker_animation@2x.png');
+            }
+        }
+
+            if(p.length){
+                setTimeout(()=>{
+                    document.getElementsByClassName('MdIcoPlay_b')[0].onclick = function(){ GM_setClipboard (p.join(',')); };
+                },1000);
+
+            }
+
+    }
+}catch(e){
+        console.log(e);
+}
+
+
+})();
