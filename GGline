@@ -1,0 +1,36 @@
+// ==UserScript==
+// @name         line
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  ggline
+// @author       You
+// @match        https://store.line.me/themeshop/product/*
+// @grant        none
+// ==/UserScript==
+
+function g(){
+        var key = ($('.FnSticker_animation_main_img').find("img")).attr('src');
+        if(!key){
+           key = $('.mdCMN03Img').find('img')[1].src;
+        }
+    if(key){
+                var rz = key.match(/products\/.+\/WEBSTORE/i);
+                rz = rz[0]?rz:key.match(/products\/.+\/ANDROID/i);
+                if(rz){
+                    var url = rz[0].replace('WEBSTORE','');
+                    console.log(url);
+                    window.open('http://dl.shop.line.naver.jp/themeshop/v1/'+ url +'ANDROID/theme.zip');
+                }
+           }
+
+};
+
+(function() {
+    'use strict';
+    $('.mdBtn01').unbind();
+    $('.mdBtnP02').unbind();
+    $('.mdBtn01 .mdBtn01Txt').text('下載');
+    $('.mdBtnP02').text('下載');
+    $( ".mdBtn01" ).bind( 'click',g);
+    $('.mdBtnP02').bind('click',g);
+})();
