@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         line
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  ggline
 // @author       You
 // @match        https://store.line.me/themeshop/product/*
 // @grant        none
 // ==/UserScript==
 
-function g(){
+function g(n){
         var key = ($('.FnSticker_animation_main_img').find("img")).attr('src');
         if(!key){
            key = $('.mdCMN03Img').find('img')[1].src;
@@ -18,19 +18,25 @@ function g(){
                 rz = rz[0]?rz:key.match(/products\/.+\/ANDROID/i);
                 if(rz){
                     var url = rz[0].replace('WEBSTORE','ANDROID');
-                    console.log(url);
+                    if(n!==1){
                     window.open('http://dl.shop.line.naver.jp/themeshop/v1/'+ url +'/theme.zip');
+                    }
+                    return 'http://dl.shop.line.naver.jp/themeshop/v1/'+ url +'/theme.zip';
                 }
            }
-
+    return window.location.href;
 };
 
 (function() {
     'use strict';
+
     $('.mdBtn01').unbind();
     $('.mdBtnP02').unbind();
-    $('.mdBtn01 .mdBtn01Txt').text('下載');
     $('.mdBtnP02').text('下載');
-    $( ".mdBtn01" ).bind( 'click',g);
     $('.mdBtnP02').bind('click',g);
+
+    if( document.querySelector('.mdBtn01 .mdBtn01Txt')){
+        document.querySelector('.mdBtn01 .mdBtn01Txt').innerHTML = '<a class="mdBtn01Txt" href="'+ g(1) +'">下載</a>';
+    }
+
 })();
