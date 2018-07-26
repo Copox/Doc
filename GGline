@@ -17,9 +17,9 @@ function g(){
                 var rz = key.match(/products\/.+\/WEBSTORE/i);
                 rz = rz[0]?rz:key.match(/products\/.+\/ANDROID/i);
                 if(rz){
-                    var url = rz[0].replace('WEBSTORE','');
+                    var url = rz[0].replace('WEBSTORE','ANDROID');
                     console.log(url);
-                    window.open('http://dl.shop.line.naver.jp/themeshop/v1/'+ url +'ANDROID/theme.zip');
+                    window.open('http://dl.shop.line.naver.jp/themeshop/v1/'+ url +'/theme.zip');
                 }
            }
 
