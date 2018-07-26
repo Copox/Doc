@@ -1,0 +1,39 @@
+<html>
+    <head>line</head>
+    <body>
+        網址: <input type="text" id="url" value="http://dl.camimg.line.naver.jp/linecamera/res2/stamp/"><br>
+        A末檔名稱: <input type="text" id="aname"><br>
+        B末檔名稱: <input type="text" id="bname"><br>
+        C末檔名稱: <input type="text" id="cname"><br>
+        D末檔名稱: <input type="text" id="dname"><br>
+        <button type="button" onclick="f()">生成</button><br><br>
+        <input type="radio" id="and" value="o" checked onclick="mode='o';f(this)"> Android
+        <input type="radio" id="ios" value="i" onclick="mode='i';f(this)"> iOS
+        <input type="radio" id="otr" value="a" onclick="mode='a';f(this)"> Other
+        <br>
+        <textarea id="out" readonly rows="30" cols="100"></textarea>
+    </body>
+    <script>
+        var mode =  'o';
+        var url = document.getElementById('url');
+        var box = document.getElementById('out');
+        var a = document.getElementById('and'),b = document.getElementById('ios'),c=document.getElementById('otr');
+        var aname = document.getElementById('aname'),bname = document.getElementById('bname'),
+        cname = document.getElementById('cname'),dname = document.getElementById('dname');
+        function f(e){
+            if(e){
+               a.checked = (a.value===e.value)?true:false;
+               b.checked = (b.value===e.value)?true:false;
+               c.checked = (c.value===e.value)?true:false;
+            }
+           var output = "";
+           var _url = url.value + aname.value + '/' + aname.value + bname.value + cname.value;
+           var n  = parseInt(dname.value);
+           for(var i = n;i>0;i--){
+               output += ((_url + (i>=10?i:'0'+i)) + '_'+ mode +'.png'+'\r\n');
+           }
+           box.value = output;
+          
+        }
+    </script>
+</html>
