@@ -6,6 +6,9 @@
         A末檔名稱（首位數字）: <input type="text" id="aname"><br>
         B末檔名稱（不包括前後數字）: <input type="text" id="bname"><br>
         D末檔名稱（末位數字，前面沒有0）: <input type="text" id="dname"><br>
+        <input type="radio" name="myRadios" onclick="temp(this)" value="1" checked/>模板1(3位)
+        <input type="radio" name="myRadios" onclick="temp(this)" value="2" />模板2(2位)
+        <input type="radio" name="myRadios" onclick="temp(this)" value="3" />模板3(2位無ID)</br>
         <button type="button" onclick="mode='o';f()"> Android</button>
         <button type="button" onclick="mode='i';f()"> iOS</button>
         <button type="button" onclick="mode='a';f()"> Other</button>
@@ -13,30 +16,52 @@
         <textarea id="out" readonly rows="30" cols="100"></textarea>
     </body>
     <script>
-        var mode =  'o';
+        var mode =  'o',tmp = 1;
         var url = document.getElementById('url');
         var box = document.getElementById('out');
         var a = document.getElementById('and'),b = document.getElementById('ios'),c=document.getElementById('otr');
         var aname = document.getElementById('aname'),bname = document.getElementById('bname'),
         dname = document.getElementById('dname');
+        function temp(e){
+            tmp =  parseInt(e.value);
+            
+        }
         function f(){
            var output = "";
-           var _url = url.value + aname.value + '/' + aname.value + bname.value;
-           var n  = parseInt(dname.value);
-           for(var i = n;i>0;i--){
-               output += (_url + zero(i) + '_'+ mode +'.png'+'\r\n');
+           
+           switch (tmp) {
+               case 2:
+                    var _url = url.value + aname.value + '/' + aname.value + bname.value;
+                    var n  = parseInt(dname.value);
+                    for(var i = n;i>0;i--){
+                        output += (_url + zero(i,2) + '_'+ mode +'.png'+'\r\n');
+                    }
+                break;
+                case 3:
+                    var _url = url.value + aname.value + '/' + bname.value;
+                    var n  = parseInt(dname.value);
+                    for(var i = n;i>0;i--){
+                        output += (_url + zero(i,2) + '_'+ mode +'.png'+'\r\n');
+                    }
+                break;
+               case 1:
+                    var _url = url.value + aname.value + '/' + aname.value + bname.value;
+                    var n  = parseInt(dname.value);
+                    for(var i = n;i>0;i--){
+                        output += (_url + zero(i,3) + '_'+ mode +'.png'+'\r\n');
+                    }
+                break;
            }
+           
            box.value = output;
           
         }
-        function zero(n){
-            if(n>99){
-                return n;
-            }else if(n<10){
-                return ("00"+n);
-            }else{
-                return ("0"+n);
-            }
+        function zero(n,i){
+           var _n = n + '';
+           for(var t = _n.length;t<i;t++){
+               _n = '0' + _n;
+           }
+           return _n;
         }
     </script>
 </html>
