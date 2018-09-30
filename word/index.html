@@ -24,11 +24,7 @@
 </head>
 <body>
     <div><textarea id="textbox"></textarea></div>
-    <p>x: <input id="x" type="text">
-        <select id="mode">
-            <option value="1">奇</option>
-            <option value="0">偶</option>
-        </select>
+    <p>x: <input id="x" type="text"><p>y: <input id="y" type="text">
         <button onclick="g()">GO</button></p>
     
 </body>
@@ -57,19 +53,19 @@
     }
 
     function f(t){
-        var s = '',word = '',p = document.getElementById('mode').selectedIndex,
-        x = document.getElementById('x').value?document.getElementById('x').value:1;
+        t += ' ';
+        var s = '',word = '',p = 0,
+        x = document.getElementById('x').value?document.getElementById('x').value:1,
+        y = document.getElementById('y').value?document.getElementById('y').value:(x+1);
         for(var i = 0;i<t.length;i++){
             s += t[i];
-            if(!(e(t[i]))||i === t.length-1){
+            if(e(t[i])){
                 word += t[i];
             }else{
-                if(p&&word.length>2){
-                    s = s.slice(0,(s.length-word.length)-1) + '{{c'+ x +':' + word +'}}' + t[i] ;
-                    p = 0;
-                }else{
-                    p = 1;                    
-                }
+                if(word){
+                    s = s.slice(0,(s.length-word.length)-1) + '{{c'+ (p?x:y) +':' + word +'}}' + t[i] ;
+                    p = p?0:1;
+                }                    
                 word = '';
  
             }
@@ -78,20 +74,9 @@
     }
 
     function e(t){
-        var p;
-        switch (t) {
-            case '?':case '\'':case '@':
-            case '/':case '(':case ')':
-            case '"':case ' ': case '\n':case '\\': case ',':
-            case '.':case '!':case ';':case ':':case '0': case '1':
-            case '2':case '3':case '4':case '5':
-            case '6':case '7':case '8':
-            case '9':
+        var p = 0;
+        if((t.charCodeAt()>=65&&t.charCodeAt()<=90)||(t.charCodeAt()>=97&&t.charCodeAt()<=122)){
             p = 1;
-                break
-            default:
-            p = 0;
-                break;
         }
         return p;
     }
