@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Page Title</title>
+    <style>
+        div{
+            text-align:center;
+            width: 100%;
+        }
+        textarea {
+            min-width: 98%;
+            max-width: 98%;
+            width: 98%;
+        }
+        p {
+            text-align: right;
+            margin-right: 2%;
+        }
+        input{
+            width: 5%;
+        }
+    </style>
+</head>
+<body>
+    <div><textarea id="textbox"></textarea></div>
+    <p>x: <input id="x" type="text">
+        <select id="mode">
+            <option value="1">奇</option>
+            <option value="0">偶</option>
+        </select>
+        <button onclick="g()">GO</button></p>
+    
+</body>
+<script>
+    var txtBox = document.getElementById('textbox');
+    txtBox.style.height = (window.screen.height/2) + 'px';
+    /*txtBox.addEventListener('mouseup',(event)=>{
+        const keyName = event.button;
+        if(keyName===0){
+            console.log('lft mouse');
+            var selObj = window.getSelection();
+            console.log('text: '+ selObj.toString());
+        }
+
+    });*/
+
+    function g(){
+        if(txtBox.value.length>0){
+            var str = f(txtBox.value);
+            if(str){
+                txtBox.value = str;
+            }
+        }else{
+            alert('nothing');
+        }
+    }
+
+    function f(t){
+        var s = '',word = '',p = document.getElementById('mode').selectedIndex,
+        x = document.getElementById('x').value?document.getElementById('x').value:1;
+        for(var i = 0;i<t.length;i++){
+            s += t[i];
+            if(!(e(t[i]))||i === t.length-1){
+                word += t[i];
+            }else{
+                if(p&&word.length>2){
+                    s = s.slice(0,(s.length-word.length)-1) + '{{c'+ x +':' + word +'}}' + t[i] ;
+                    p = 0;
+                }else{
+                    p = 1;                    
+                }
+                word = '';
+ 
+            }
+        }
+        return s;
+    }
+
+    function e(t){
+        var p;
+        switch (t) {
+            case '?':case '\'':case '@':
+            case '/':case '(':case ')':
+            case '"':case ' ': case '\n':case '\\': case ',':
+            case '.':case '!':case ';':case ':':case '0': case '1':
+            case '2':case '3':case '4':case '5':
+            case '6':case '7':case '8':
+            case '9':
+            p = 1;
+                break
+            default:
+            p = 0;
+                break;
+        }
+        return p;
+    }
+
+</script>
+</html>
