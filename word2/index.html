@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Page Title</title>
+    <link rel="stylesheet" href="./keen-ui/dist/keen-ui.min.css">
+</head>
+<body>
+    <div id="app">
+        <div class="page__demo-group page__demo-group--has-tabs">
+            <ui-toolbar
+                brand="Book App"
+                remove-brand-divider
+                text-color="white"
+                type="colored"
+                :raised="false"
+            >
+                <div slot="actions">
+                    <ui-icon-button
+                        color="white"
+                        icon="search"
+                        size="large"
+                        type="secondary"
+                    ></ui-icon-button>
+
+                    <ui-icon-button
+                        color="white"
+                        has-dropdown
+                        icon="more_vert"
+                        ref="dropdownButton8"
+                        size="large"
+                        type="secondary"
+                    >
+                        <ui-menu
+                            contain-focus
+                            has-icons
+                            slot="dropdown"
+                            :options="menuOptions"
+                            @close="$refs.dropdownButton8.closeDropdown()"
+                        ></ui-menu>
+                    </ui-icon-button>
+                </div>
+            </ui-toolbar>
+
+            <ui-tabs
+                background-color="primary"
+                fullwidth
+                indicator-color="white"
+                text-color-active="white"
+                text-color="white"
+                type="text"
+            >
+                <ui-tab title="Books" icon="book">
+                    My Books
+                </ui-tab>
+
+                <ui-tab title="Authors" icon="people">
+                    Authors
+                </ui-tab>
+
+                <ui-tab title="Collections" icon="collections_bookmark">
+                    My collections
+                </ui-tab>
+
+                <ui-tab title="Favourites" icon="favorite">
+                    My favourites
+                </ui-tab>
+            </ui-tabs>
+        </div>
+    </div>
+    <script src="./js/vue.js"></script>
+    <script src="./keen-ui/dist/keen-ui.min.js"></script>
+</body>
+<script type="module">
+    import UiIconButton from './keen-ui/src/UiIconButton.vue';
+import UiMenu from './keen-ui/src/UiMenu.vue';
+import UiTab from './keen-ui/src/UiTab.vue';
+import UiTabs from './keen-ui/src/UiTabs.vue';
+import UiToolbar from './keen-ui/src/UiToolbar.vue';
+    new Vue({
+        el: '#app',
+        components: {
+            // all Keen UI components already registered
+        }
+    });
+</script>
+
+</html>
