@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Page Title</title>
+    <style>
+        div{
+            text-align:center;
+            width: 100%;
+        }
+        textarea {
+            min-width: 98%;
+            max-width: 98%;
+            width: 98%;
+        }
+        p {
+            text-align: right;
+            margin-right: 2%;
+        }
+        input{
+            width: 5%;
+        }
+    </style>
+</head>
+<body>
+    <div><textarea id="textbox"></textarea></div>
+    <p>x: <input id="x" type="text">y: <input id="y" type="text"><button onclick="g()">GO</button><button onclick="h()">RE</button></p>
+    
+</body>
+<script>
+    var ch = '';
+    var txtBox = document.getElementById('textbox');
+    txtBox.style.height = (window.screen.height/2) + 'px';
+    /*txtBox.addEventListener('mouseup',(event)=>{
+        const keyName = event.button;
+        if(keyName===0){
+            console.log('lft mouse');
+            var selObj = window.getSelection();
+            console.log('text: '+ selObj.toString());
+        }
+    });*/
+    function h(){
+        txtBox.value = (txtBox.value!== ch?ch:txtBox.value);
+    }
+    function g(){
+        ch = txtBox.value;
+        if(txtBox.value.length>0){
+            var str = f(txtBox.value);
+            if(str){
+                txtBox.value = str;
+            }
+        }else{
+            alert('nothing');
+        }
+    }
+    function f(s){
+        let x = document.getElementById('x').value?document.getElementById('x').value:1;
+        let y = document.getElementById('y').value?document.getElementById('y').value:(x+1);
+        let p = 0;
+        let r = s.replace(/([\u4E00-\u9FA5])|([a-zA-Z]+)/gu,function(t){
+            return `{{c${(((p++)%2==0)?x:y)}::${t}}}`;
+        })
+        return r;
+    }
+</script>
+</html>
