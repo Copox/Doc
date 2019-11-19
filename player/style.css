@@ -1,0 +1,26 @@
+html, body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #fff;
+  background-color: #333;
+}
+
+#button1 {
+  width: 120px;
+  height: 40px;
+  font-size: 20px;
+  line-height: 40px;
+  color: #aaa;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  pointer-events: none;
+}
+#button1[data-loaded=true] {
+  pointer-events: auto;
+  color: yellow;
+}
