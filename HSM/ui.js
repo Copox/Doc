@@ -5,8 +5,7 @@ var gainNode = null;
 
 var streamStatus = {
     error:0,
-    done:0,
-    canPlay:false
+    done:0
 }
 
 
@@ -66,7 +65,8 @@ function getSong(key){
                 else
                     songBuffer = appendBuffer(songBuffer,buf);
                 if(streamStatus.done >= songList.length){
-                    streamStatus.canPlay = true;
+                    vm.$data.canPlaystream = true;
+                    vm.$data.waitDialog = false;
                 }else{
                     setTimeout(getSong,1,streamStatus.done);
                 }
@@ -77,7 +77,8 @@ function getSong(key){
         streamStatus.error++;
         streamStatus.done++;
         if(streamStatus.done >= songList.length){
-            streamStatus.canPlay = true;
+            vm.$data.canPlaystream = true;
+            vm.$data.waitDialog = false;
         }else{
             setTimeout(getSong,1,streamStatus.done);
         }
@@ -195,7 +196,7 @@ const searchType = [
 var songList = [];
 var searchList = [];
 
-new Vue({
+var vm = new Vue({
     el: '#HSM',
     vuetify: new Vuetify(),
     data:{
@@ -220,6 +221,8 @@ new Vue({
         playerDialog:false,
         playBtnText:['Play','Stop'],
         playBtn:false,
+        canPlaystream:false,
+        waitDialog:false
     },
     methods:{
         tabChange:function (id){
@@ -292,17 +295,15 @@ new Vue({
         getStreamStatus:function(){
             return 'Done : ' + streamStatus.done + ' , Error : ' + streamStatus.error; 
         },
-        canPlayStream:function(){
-            return streamStatus.canPlay;
-        },
         createStream:function(){
+            this.waitDialog = true;
             var buffer = [];
             if(songList.length){
                 resetAuido();
                 this.playBtn = false;
+                this.canPlaystream = false;
                 streamStatus.done = 0;
                 streamStatus.error = 0;
-                streamStatus.canPlay = false;
                 getSong(0);
             }
             this.playerDialog = false;
