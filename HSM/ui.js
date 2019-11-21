@@ -4,8 +4,7 @@ async function fetchJSON(url){
     try{
         let response = await fetch(url);
         if(response.ok)
-            body = (await response.json());
-        return body;
+            return (await response.json());
     }catch(e){
         return body;
     }
@@ -30,10 +29,10 @@ function searchAuthorByName(keyword){
 }
 
 
-function searchSongByAuthors(authors){
+async function searchSongByAuthors(authors){
     var songs = [],id = new Array(133);
     for(let a of authors){
-        let t = fetchJSON('./authors/' + encodeURIComponent(a) + '.json');
+        let t = await fetchJSON('https://copox.github.io/Doc/HSM/authors/' + encodeURIComponent(a) + '.json');
         if(t && t.songs.length){
             for(let s of t.songs){
                 let key = s.id%133;
@@ -41,18 +40,20 @@ function searchSongByAuthors(authors){
                     id[key].push(s.id);
                     songs.push(s);
                 }
-                else if(!id[key])
+                else if(!id[key]){
                     id[key] = [s.id];
+                    songs.push(s);
+                }
             }
         }
     }
     return songs;
 }
 
-function searchSongByName(keyword){
+async function searchSongByName(keyword){
     var songs = [];
     let c = encodeURIComponent([...keyword][0]);
-    let t = fetchJSON('./title/' + c + '.json');
+    let t = await fetchJSON('https://copox.github.io/Doc/HSM/title/' + c + '.json');
     if(t && t.songs){
         for(let e of t.songs){
             let f = true;
@@ -66,12 +67,11 @@ function searchSongByName(keyword){
                 songs.push(e);
         }
     }
-    console.log(songs);
     return songs;
 }
 
-
-const allAuthors = fetchJSON('./authors/authors.json');
+var allAuthors;
+fetchJSON('https://copox.github.io/Doc/HSM/authors/authors.json').then(r=>{allAuthors = r});
 
 
 
@@ -146,10 +146,10 @@ new Vue({
                     break;
             }
         },
-        selectSong:function(id){
+        selectSong:async function(id){
             this.detailDialog = true;
             this.changeBtn = this.checkSongRep(id);
-            this.detailSong = getSongDetailById(id);
+            this.detailSong = await getSongDetailById(id);
         },
         checkSongRep:function(id){
             for(let i of songList)
@@ -171,35 +171,36 @@ new Vue({
                 del:false
             });
         },
-        searchSong:function(){
+        searchSong:async function(){
             if(this.searchKeyword.trim()){
                 switch(this.searchStatus){
                     case 0:
-                        this.searchByName(this.searchKeyword.trim());
+                        await this.searchByName(this.searchKeyword.trim());
                     break;
                     default:
-                        this.searchBySong(this.searchKeyword.trim());
+                        await this.searchBySong(this.searchKeyword.trim());
                     break;
                 }
             }
             this.searchDialog = false;
+            this.tabChange(0);
         },
-        searchByName:function(name){
-            searchList = searchSongByAuthors(searchAuthorByName(name));
+        searchByName:async function(name){
+            searchList = await searchSongByAuthors(searchAuthorByName(name));
         },
-        searchBySong:function(keyword){
-            searchList = searchSongByName(keyword);
+        searchBySong:async function(keyword){
+            searchList = await searchSongByName(keyword);
         }
     }
 });
 
-function getSongDetailById(id){
+async function getSongDetailById(id){
     let s = {
         title:'loading ...',
         authors:['loading ...'],
         url:''
     };
-    let r = fetchJSON('./songs/' + id + '.json');
+    let r = await fetchJSON('https://copox.github.io/Doc/HSM/songs/' + id + '.json');
     if(r)
         s = r;
     return r;
