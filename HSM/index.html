@@ -11,7 +11,7 @@
                     <template>
                         <div>
                           <v-app-bar
-                            color="deep-purple accent-4"
+                            color="accent-4"
                             dense
                             dark
                           >
@@ -46,10 +46,10 @@
                                   </v-list-item-title>
                                 </v-list-item>
 
-                                <v-list-item v-if="canPlayStream()">
+                                <v-list-item v-if="canPlaystream">
                                   <v-list-item-title>
                                       <v-icon style="margin-right:10px">mdi-disc-player</v-icon>
-                                    <v-btn color="success" text @click="playStream()">{{ playBtnText[playBtn*1] }}</v-btn>
+                                    <v-btn v-bind:color="changeBtnColor[playBtn*1]" text @click="playStream()">{{ playBtnText[playBtn*1] }}</v-btn>
                                   </v-list-item-title>
                                 </v-list-item>
 
@@ -202,6 +202,26 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog
+      v-model="waitDialog"
+      hide-overlay
+      persistent
+      width="300"
+    >
+      <v-card
+        color="dark"
+        dark
+      >
+        <v-card-text>
+          Please stand by
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
 
 
                       </template>              
