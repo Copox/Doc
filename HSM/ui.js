@@ -1,12 +1,13 @@
 
-async function fetchJSON(url){
-    let body = null;
+function fetchJSON(url){
     try{
-        let response = await fetch(url);
-        if(response.ok)
-            return (await response.json());
+        let request = new XMLHttpRequest();
+        request.open('GET',url,false);
+        request.send(null);
+        if(request.status >= 200 && request.status <= 299)
+            return JSON.parse(request.responseText);
     }catch(e){
-        return body;
+        return null;
     }
 }
 
@@ -29,10 +30,10 @@ function searchAuthorByName(keyword){
 }
 
 
-async function searchSongByAuthors(authors){
+function searchSongByAuthors(authors){
     var songs = [],id = new Array(133);
     for(let a of authors){
-        let t = await fetchJSON('https://copox.github.io/Doc/HSM/authors/' + encodeURIComponent(a) + '.json');
+        let t = fetchJSON('https://copox.github.io/Doc/HSM/authors/' + encodeURIComponent(a) + '.json');
         if(t && t.songs.length){
             for(let s of t.songs){
                 let key = s.id%133;
@@ -50,10 +51,10 @@ async function searchSongByAuthors(authors){
     return songs;
 }
 
-async function searchSongByName(keyword){
+function searchSongByName(keyword){
     var songs = [];
     let c = encodeURIComponent([...keyword][0]);
-    let t = await fetchJSON('https://copox.github.io/Doc/HSM/title/' + c + '.json');
+    let t = fetchJSON('https://copox.github.io/Doc/HSM/title/' + c + '.json');
     if(t && t.songs){
         for(let e of t.songs){
             let f = true;
@@ -70,8 +71,7 @@ async function searchSongByName(keyword){
     return songs;
 }
 
-var allAuthors;
-fetchJSON('https://copox.github.io/Doc/HSM/authors/authors.json').then(r=>{allAuthors = r});
+var allAuthors = fetchJSON('https://copox.github.io/Doc/HSM/authors/authors.json');
 
 
 
@@ -120,6 +120,7 @@ new Vue({
         listSource:null,
         detailDialog:false,
         detailSong:{
+            id:-1,
             title:'loading ...',
             authors:['loading ...'],
             url:''
@@ -146,10 +147,11 @@ new Vue({
                     break;
             }
         },
-        selectSong:async function(id){
+        selectSong:function(id){
             this.detailDialog = true;
             this.changeBtn = this.checkSongRep(id);
-            this.detailSong = await getSongDetailById(id);
+            this.detailSong = getSongDetailById(id);
+            console.log(this.detailSong);
         },
         checkSongRep:function(id){
             for(let i of songList)
@@ -158,6 +160,7 @@ new Vue({
             return false;
         },
         changeSongList:function(name,id,type){
+            console.log(this.listSource);
             this.changeBtn = !this.changeBtn;
             for(let i of songList){
                 if(i.id === id){
@@ -171,36 +174,37 @@ new Vue({
                 del:false
             });
         },
-        searchSong:async function(){
+        searchSong:function(){
             if(this.searchKeyword.trim()){
                 switch(this.searchStatus){
                     case 0:
-                        await this.searchByName(this.searchKeyword.trim());
+                        this.searchByName(this.searchKeyword.trim());
                     break;
                     default:
-                        await this.searchBySong(this.searchKeyword.trim());
+                        this.searchBySong(this.searchKeyword.trim());
                     break;
                 }
             }
             this.searchDialog = false;
             this.tabChange(0);
         },
-        searchByName:async function(name){
-            searchList = await searchSongByAuthors(searchAuthorByName(name));
+        searchByName:function(name){
+            searchList = searchSongByAuthors(searchAuthorByName(name));
         },
-        searchBySong:async function(keyword){
-            searchList = await searchSongByName(keyword);
+        searchBySong:function(keyword){
+            searchList = searchSongByName(keyword);
         }
     }
 });
 
-async function getSongDetailById(id){
+function getSongDetailById(id){
     let s = {
+        id:-1,
         title:'loading ...',
         authors:['loading ...'],
         url:''
     };
-    let r = await fetchJSON('https://copox.github.io/Doc/HSM/songs/' + id + '.json');
+    let r = fetchJSON('https://copox.github.io/Doc/HSM/songs/' + id + '.json');
     if(r)
         s = r;
     return r;
