@@ -1,4 +1,91 @@
 
+var audioContext = null;
+var bufferSource = null;
+var gainNode = null;
+
+var streamStatus = {
+    error:0,
+    done:0,
+    canPlay:false
+}
+
+
+function createAudioContext() {
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+        console.log('audioContext failed');
+    }
+}
+
+function resetAuido(){
+    bufferSource && bufferSource.stop();
+    createAudioContext();
+    bufferSource = null;
+    gainNode = null;
+}
+
+function createBufferSource(config) {
+    bufferSource = audioContext.createBufferSource();
+    bufferSource.buffer = config.buffer;
+    bufferSource.loop = config.loop || false;
+    bufferSource.onended = () => {
+      bufferSource = null;
+    };
+}
+function createGainNode() {
+    gainNode = audioContext.createGain();
+}
+
+
+var songBuffer;  
+function appendBuffer(buffer1, buffer2) {
+    var numberOfChannels = Math.min( buffer1.numberOfChannels, buffer2.numberOfChannels );
+    var tmp = audioContext.createBuffer( numberOfChannels, (buffer1.length + buffer2.length), buffer1.sampleRate );
+    for (var i=0; i<numberOfChannels; i++) {
+      var channel = tmp.getChannelData(i);
+      channel.set( buffer1.getChannelData(i), 0);
+      channel.set( buffer2.getChannelData(i), buffer1.length);
+    }
+    return tmp;
+  }
+
+
+function getSong(key){
+    let request = new XMLHttpRequest();
+    request.open('GET',getSongDetailById(songList[key].id).url,true);
+    request.responseType = 'arraybuffer';
+    request.onload = () =>{
+        audioContext.decodeAudioData(request.response,buf => {
+            streamStatus.done++;
+            if(!buf)
+                streamStatus.error++;
+            else{
+                if(streamStatus.done === 1)
+                    songBuffer = buf;
+                else
+                    songBuffer = appendBuffer(songBuffer,buf);
+                if(streamStatus.done >= songList.length){
+                    streamStatus.canPlay = true;
+                }else{
+                    setTimeout(getSong,1,streamStatus.done);
+                }
+            }
+        });
+    };
+    request.onerror = () => {
+        streamStatus.error++;
+        streamStatus.done++;
+        if(streamStatus.done >= songList.length){
+            streamStatus.canPlay = true;
+        }else{
+            setTimeout(getSong,1,streamStatus.done);
+        }
+    };
+    request.send();
+}
+
+
 function fetchJSON(url){
     try{
         let request = new XMLHttpRequest();
@@ -89,9 +176,9 @@ const toolbar = [
         icon:'mdi-file-music-outline'
     },
     {
-        title:'Player',
+        title:'Stream',
         tabId:2,
-        icon:'mdi-disc-player'
+        icon:'mdi-stack-overflow'
     }
 ];
 const searchType = [
@@ -130,6 +217,9 @@ new Vue({
         changeBtnColor:['success','warning'],
         searchKeyword:'',
         searchStatus:0,
+        playerDialog:false,
+        playBtnText:['Play','Stop'],
+        playBtn:false,
     },
     methods:{
         tabChange:function (id){
@@ -144,6 +234,7 @@ new Vue({
                     break;
                 case 2:
                 default:
+                    this.playerDialog = true;
                     break;
             }
         },
@@ -151,7 +242,7 @@ new Vue({
             this.detailDialog = true;
             this.changeBtn = this.checkSongRep(id);
             this.detailSong = getSongDetailById(id);
-            console.log(this.detailSong);
+            //console.log(this.detailSong);
         },
         checkSongRep:function(id){
             for(let i of songList)
@@ -160,7 +251,7 @@ new Vue({
             return false;
         },
         changeSongList:function(name,id,type){
-            console.log(this.listSource);
+            //console.log(this.listSource);
             this.changeBtn = !this.changeBtn;
             for(let i of songList){
                 if(i.id === id){
@@ -173,6 +264,7 @@ new Vue({
                 id:id,
                 del:false
             });
+            this.detailDialog = false;
         },
         searchSong:function(){
             if(this.searchKeyword.trim()){
@@ -193,9 +285,48 @@ new Vue({
         },
         searchBySong:function(keyword){
             searchList = searchSongByName(keyword);
+        },
+        getSongNum:function(){
+            return songList.length;
+        },
+        getStreamStatus:function(){
+            return 'Done : ' + streamStatus.done + ' , Error : ' + streamStatus.error; 
+        },
+        canPlayStream:function(){
+            return streamStatus.canPlay;
+        },
+        createStream:function(){
+            var buffer = [];
+            if(songList.length){
+                resetAuido();
+                this.playBtn = false;
+                streamStatus.done = 0;
+                streamStatus.error = 0;
+                streamStatus.canPlay = false;
+                getSong(0);
+            }
+            this.playerDialog = false;
+        },
+        playStream:function(){
+            if(this.playBtn){
+                bufferSource && bufferSource.stop();
+            }else{
+                createBufferSource({
+                    buffer:songBuffer,
+                    loop: true });
+                createGainNode();
+                bufferSource.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                bufferSource.start();
+                gainNode.gain.value = 0.5;
+            }
+            this.playBtn = !this.playBtn;
         }
     }
 });
+
+
+
 
 function getSongDetailById(id){
     let s = {
