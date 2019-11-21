@@ -66,6 +66,7 @@ function searchSongByName(keyword){
                 songs.push(e);
         }
     }
+    console.log(songs);
     return songs;
 }
 
