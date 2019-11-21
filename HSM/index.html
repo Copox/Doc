@@ -45,6 +45,14 @@
                                     {{ title }}
                                   </v-list-item-title>
                                 </v-list-item>
+
+                                <v-list-item v-if="canPlayStream()">
+                                  <v-list-item-title>
+                                      <v-icon style="margin-right:10px">mdi-disc-player</v-icon>
+                                    <v-btn color="success" text @click="playStream()">{{ playBtnText[playBtn*1] }}</v-btn>
+                                  </v-list-item-title>
+                                </v-list-item>
+
                               </v-list>
                             </v-menu>
                           </v-app-bar>
@@ -161,6 +169,39 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+
+      <v-dialog
+      v-model="playerDialog"
+      max-width="250px"
+    >
+      <v-card>
+        <v-card-title>
+          Stream
+        </v-card-title>
+        <v-card-text>
+          You Got : {{ getSongNum() }} songs
+        </v-card-text>
+        <v-card-actions>
+            <v-btn
+            color="error"
+            text
+            @click="playerDialog = false"
+          >
+            Close
+          </v-btn>
+          <v-btn
+            v-if="getSongNum()>0"
+            color="primary"
+            text
+            @click="createStream()"
+          >
+            Create Stream
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
 
 
                       </template>              
